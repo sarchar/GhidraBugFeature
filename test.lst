@@ -1,0 +1,62 @@
+		;; segment "zp" size = 0x0100 start = 0x0000 file_offset = "not present"
+		;; segment "rom" size = 0x8000 start = 0x8000 file_offset = 0x0000
+
+        ;; segment "zp", org = 0x0000
+        ;;
+        ;; Accumulator/Memory = 8-bit, Index registers = 8-bit
+        ;;
+
+        ;; segment "rom", org = 0x8000
+        ;;
+        ;; Accumulator/Memory = 8-bit, Index registers = 8-bit
+        ;;
+        ;; _nmi:
+        ;; _irq:
+00:8000 40                     RTI 
+        ;; _reset:
+00:8001 A9 00                  LDA #0x00
+00:8003 A9 02                  LDA #0x02
+00:8005 A9 00                  LDA #0x00
+00:8007 95 00                  STA 0x00, X
+00:8009 A9 20                  LDA #0x20
+00:800B 95 01                  STA 0x01, X
+00:800D 81 00                  STA (0x00, X)
+00:800F 91 00                  STA (0x00), Y
+00:8011 95 04                  STA 0x04, X
+00:8013 A9 20                  LDA #0x20
+00:8015 95 05                  STA 0x05, X
+00:8017 85 88                  STA 0x88
+00:8019 A0 05                  LDY #0x05
+00:801B A2 10                  LDX #0x10
+00:801D A9 FF                  LDA #0xFF
+        ;; clear_memory:
+00:801F 99 7B 00               STA 0x007B, Y
+00:8022 CA                     DEX 
+00:8023 D0 FA                  BNE 0x801F
+00:8025 A9 00                  LDA #0x00
+00:8027 0A                     ASL A
+00:8028 A8                     TAY 
+00:8029 C8                     INY 
+00:802A B9 34 80               LDA 0x8034, Y
+00:802D 48                     PHA 
+00:802E 88                     DEY 
+00:802F B9 34 80               LDA 0x8034, Y
+00:8032 48                     PHA 
+00:8033 60                     RTS 
+        ;; jump_table:
+00:8034 37 80                  .DW 0x8037
+00:8036 3A 80                  .DW 0x803A
+        ;; function1:
+00:8038 4C 38 80               JMP 0x8038
+        ;; function2:
+00:803B EA                     NOP 
+00:803C EA                     NOP 
+00:803D 60                     RTS 
+        ;; set org = 0xFFFA
+        ;;
+        ;; NMI:
+00:FFFA 00 80                  .DW 0x8000
+        ;; RESET:
+00:FFFC 01 80                  .DW 0x8001
+        ;; IRQ:
+00:FFFE 00 80                  .DW 0x8000
